@@ -1,7 +1,4 @@
 
-
-
-
 'use strict';
 
 const caps = require('../caps.js');
