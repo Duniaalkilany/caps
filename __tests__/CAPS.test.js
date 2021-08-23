@@ -1,46 +1,100 @@
+
+
+
+
 'use strict';
 
+const caps = require('../caps.js');
+const storeId =process.env.STORE_ID||'D2021'
 
-const events = require('../events');
 
 
 let order = {
-    store: 'Dunia-Flowers',
-    orderID: 'e3669048-7313-427b-b6cc-74010ca1f8f0',
+     storeId:storeId,
+     orderID: 'e3669048-7313-427b-b6cc-74010ca1f8f0',
     customer: 'Jamal Braun',
-    address: 'Schmittfort, LA'
+     address: 'Schmittfort, LA'
 };
 
-
-
-describe('testing event handlers', () => {
-    let consoleSpy;
+ describe('testing event handlers', () => {
+     let consoleSpy;
 
     beforeAll(() => {
         consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-    });
+     });
       
-    it('pickup event Work', async () => {
-        events.emit('pickup', order);
-        await consoleSpy();
-        expect(consoleSpy).toHaveBeenCalled();
-    });
+    it('pickup Work', async () => {
+        caps.emit('pickup', order);
+         await consoleSpy();
+         expect(consoleSpy).toHaveBeenCalled();
+     });
 
-    it('in-transit event Work ', async () => {
-        events.emit('in-transit', order);
-        await consoleSpy();
-        expect(consoleSpy).toHaveBeenCalled();
-    });
+    it('in-transit  Work ', async () => {
+         caps.emit('in-transit', order);
+         await consoleSpy();
+         expect(consoleSpy).toHaveBeenCalled();
+     });
 
-    it('delivered event Work  ', async () => {
-        events.emit('delivered', order);
-        await consoleSpy();
-        expect(consoleSpy).toHaveBeenCalled();
-    });
+    it('delivered  Work  ', async () => {
+      caps.emit('delivered', order);
+         await consoleSpy();
+         expect(consoleSpy).toHaveBeenCalled();
+     });
 
 
-    afterAll(() => {
+    
+     afterAll(async () => {
         consoleSpy.mockRestore();
-    });
+      
+      });
 
-});
+ });
+
+//  'use strict';
+
+
+// const caps = require('../caps');
+// const storeId =process.env.STORE_ID||'D2021';
+
+// let order = {
+//      storeId:storeId,
+//      orderID: 'e3669048-7313-427b-b6cc-74010ca1f8f0',
+//     customer: 'Jamal Braun',
+//      address: 'Schmittfort, LA'
+// };
+
+
+
+//  describe('testing event handlers', () => {
+//      let consoleSpy;
+
+//     beforeAll(() => {
+//         consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+//      });
+      
+//     it('pickup Work', async () => {
+//         caps.emit('pickup', order);
+//          await consoleSpy();
+//          expect(consoleSpy).toHaveBeenCalled();
+//      });
+
+//     it('in-transit  Work ', async () => {
+//          caps.emit('in-transit', order);
+//          await consoleSpy();
+//          expect(consoleSpy).toHaveBeenCalled();
+//      });
+
+//     it('delivered  Work  ', async () => {
+//       caps.emit('delivered', order);
+//          await consoleSpy();
+//          expect(consoleSpy).toHaveBeenCalled();
+//      });
+
+
+    
+//      afterAll(async () => {
+//         consoleSpy.mockRestore();
+      
+//       });
+
+//  });
