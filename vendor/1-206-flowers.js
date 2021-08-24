@@ -3,10 +3,13 @@
 require('dotenv').config();
 
 const faker = require('faker');
-const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3000';
 const io = require('socket.io-client');
-const socket = io.connect(`${SERVER_URL}/caps`);
-const storeName = process.env.storeName||'dunia';
+const port = process.env.PORT||3000;
+
+const host = `http://localhost:${port}` || 'http://localhost:3000';
+const socket = io.connect(`${host}/caps`);
+
+const storeName = '1-206-flowers'
 
 socket.emit('join', storeName);
 
@@ -40,7 +43,6 @@ setInterval(() => {
 socket.on('delivered', thanks);
 
 function thanks(message){
-  console.log('==================',message.payload.payload.orderID);
   console.log(`VENDOR: Thank you for delivering ${message.payload.payload.orderID}`);
 
   socket.emit('received', message.id);
