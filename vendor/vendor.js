@@ -3,13 +3,16 @@
 require('dotenv').config();
 
 const faker = require('faker');
-const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3000';
 const io = require('socket.io-client');
-const socket = io.connect(`${SERVER_URL}/caps`);
-const storeName = process.env.storeName||'dunia';
-
+const port = process.env.PORT||3000;
+const host = `http://localhost:${port}` || 'http://localhost:3000';
+const socket = io.connect(`${host}/caps`);
+const storeName = process.env.STORE_NAME ||'Dunia-Flowers' ;
+//join the room 
 socket.emit('join', storeName);
 
+
+////subscribe to the delivered event 
 let vendor = { clientID: storeName, event: 'delivered'};
 
 socket.emit('get-all', vendor);
@@ -40,8 +43,7 @@ setInterval(() => {
 socket.on('delivered', thanks);
 
 function thanks(message){
-  console.log('==================',message.payload.payload.orderID);
-  console.log(`VENDOR: Thank you for delivering ${message.payload.payload.orderID}`);
-
+  console.log(` ${message.payload.payload.store} VENDOR: Thank you for delivering ${message.payload.payload.orderId}`);
+//Trigger the received event with the correct payload to the server
   socket.emit('received', message.id);
 }

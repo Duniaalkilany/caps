@@ -1,84 +1,50 @@
 'use strict';
 
 require('dotenv').config();
-
-const PORT = process.env.PORT || 3000;
-const io = require('socket.io')(PORT);
-const logger = require('./logger');
-
-io.on('connection', socket => {
-  console.log('connected user - server level:', socket.id);
-});
-
+const port = process.env.PORT || 3000;
+const io = require('socket.io')(port);
 const caps = io.of('/caps');
 
-caps.on('connection', socket => {
 
-  console.log('connected user - namespace:', socket.id);
 
-  socket.on('join', room => {
-    console.log('room name:', room);
-    socket.join(room);
-  })
 
-  socket.on('pickup', payload => {
-    logger('pickup', payload);
-    caps.emit('pickup', payload);
-  });
-
-  socket.on('in-transit', payload => {
-    logger('in-transit', payload);
-    caps.to(payload.store).emit('in-transit', payload);
-  });
-
-  socket.on('delivered', payload => {
-    logger('delivered', payload);
-    caps.to(payload.store).emit('delivered', payload);
-  });
+// Global Operations - Default Namespace
+io.on('connection', (socket) => {
+  console.log("Welcome to Global Connection ! ", socket.id);
 
 });
+caps.on('connection', (socket) => {
+  console.log('caps: You are now connected to the CAPS system', socket.id);
 
 
-// 'use strict';
+  socket.on('join', room => {
+    socket.join(room);
+  })
+  
 
-// require('dotenv').config();
-// const port = process.env.PORT || 3000;
-// const io = require('socket.io')(port);
-// const logger = require('./logger');
-// const caps = io.of('/caps');
-
-
-
-
-// // Global Operations - Default Namespace
-// io.on('connection', (socket) => {
-//   console.log("Welcome to Global Connection ! ", socket.id);
-
-// });
-// caps.on('connection', (socket) => {
-//   console.log('caps: You are now connected to the CAPS system', socket.id);
+  socket.on('pickup', payload => {
+   let event = { event: 'pickup', time: new Date().toLocaleString(), payload: payload}
+    console.log('EVENT', event);
+    caps.emit('pickup', payload);
+  })
 
 
-//   socket.on('join', room => {
-//     console.log('room name:', room);
-//     socket.join(room);
-//   })
+  socket.on('in-transit', payload => {
+   let event = { event: 'in-transit', time: new Date().toLocaleString(), payload: payload}
+    console.log('EVENT', event);
+    caps.emit('in-transit', payload);
+  })
+  
+  socket.on('delivered', payload => {
+    let event = { event: 'delivered', time: new Date(), payload: payload}
+    console.log('EVENT', event)
+    caps.emit('delivered', payload);
+  })
 
-//   socket.on('pickup', payload => {
-//     logger('pickup', payload);
-//     caps.emit('pickup', payload);
-//   });
 
-//   socket.on('in-transit', payload => {
-//     logger('in-transit', payload);
-//     caps.to(payload.store).emit('in-transit', payload);
-//   });
+})
 
-//   socket.on('delivered', payload => {
-//     logger('delivered', payload);
-//     caps.to(payload.store).emit('delivered', payload);
-//   });
-
-// });
+module.exports=caps
 
   
+

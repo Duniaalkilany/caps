@@ -3,13 +3,15 @@
 require('dotenv').config();
 
 const faker = require('faker');
-const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3000';
 const io = require('socket.io-client');
-const socket = io.connect(`${SERVER_URL}/caps`);
-const storeName = 'Acme-Widgets'
+const port = process.env.PORT||3000;
+const host = `http://localhost:${port}` || 'http://localhost:3000';
+const socket = io.connect(`${host}/caps`);
+const storeName = 'acme-Widgets'
 
 socket.emit('join', storeName);
 
+//  client application (acme-Widgets) that subscribe to the delivered event 
 let vendor = { clientID: storeName, event: 'delivered'};
 
 socket.emit('get-all', vendor);
@@ -40,7 +42,7 @@ setInterval(() => {
 socket.on('delivered', thanks);
 
 function thanks(message){
-  console.log(`VENDOR: Thank you for delivering ${message.payload.payload.orderID}`);
+  console.log(`${message.payload.payload.store} VENDOR: Thank you for delivering ${message.payload.payload.orderId}`);
 
   socket.emit('received', message.id);
 }
