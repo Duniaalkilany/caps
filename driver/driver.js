@@ -1,30 +1,35 @@
 'use strict';
-// const events = require('../events');
-
-
-const port = process.env.PORT||3000;
-const io = require('socket.io-client');
-const host = `http://localhost:${port}` || 'http://localhost:3000';
-const socket = io.connect(`${host}/caps`);
-const storeName = process.env.STORE_NAME||'Dunia-Flowers';
-socket.emit('join',storeName );
-socket.on('pickup', pickUp);
-
+// driver client 
 require('dotenv').config();
-function pickUp(payload) {
 
-    setTimeout(() => {
-      console.log(`DRIVER: picked up ${payload.orderId}`);
-      socket.emit('in-transit', payload);
-    }, 1500)
+const io = require('socket.io-client');
+const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3000';
+const socket = io.connect(`${SERVER_URL}/caps`);
 
+let driver = {clientID: 'driver', event: 'pickup'};
 
-    setTimeout(() => {
-      console.log(`DRIVER: delivered ${payload.orderId}`);
-      socket.emit('delivered', payload);
-    }, 3000)
-  
+//get all msgs 
+socket.emit('get-all', driver);
+
+socket.on('message', message => {
+  if(message.payload.event === 'pickup') {
+    console.log('message',message)
+    pickupAndDeliver(message);
   }
-  
-  module.exports = {pickUp} 
+});
 
+socket.on('pickup', pickupAndDeliver);
+
+function pickupAndDeliver(message) {
+  setTimeout(() => {
+    console.log(`DRIVER: picked up ${message.payload.payload.orderId} to ${message.payload.payload.store} `);
+    socket.emit('in-transit', message.payload.payload);
+  }, 1500);
+
+  setTimeout(() => {
+    console.log(`DRIVER: delivered up ${message.payload.payload.orderId} to ${message.payload.payload.store} `);
+    socket.emit('delivered', message.payload.payload);
+  }, 3000);
+ 
+  socket.emit('received', message.id);
+}
